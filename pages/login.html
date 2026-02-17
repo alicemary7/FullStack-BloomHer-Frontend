@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Regular Flow Pads</title>
+  <link rel="stylesheet" href="../styles/log_in.css" />
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="logo"><a href="../index.html">BLOOMHER</a></div>
+    <ul class="nav-links">
+      <li><a href="./product.html">ORGANIC PADS</a></li>
+
+      <li><a href="./irregular.html">IRREGULAR PERIODS</a></li>
+    </ul>
+    <div class="nav-buttons">
+      <a href="./login.html" class="btn-login">Login</a>
+      <a href="./admin.html" class="btn-admin" style="display: none;">Admin</a>
+      <button class="btn-cart">
+        <a href="./card.html" style="color: #ffffff">🛒 Cart</a>
+      </button>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="login-container">
+      <div class="welcome-text">
+        <h2>Welcome Back</h2>
+        <p>Please login to your account</p>
+      </div>
+
+      <form>
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input type="email" id="email" class="form-input" placeholder="Enter your email" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input type="password" id="password" class="form-input" placeholder="Enter your password" required />
+        </div>
+
+        <div class="form-options clearfix">
+          <div class="remember-me">
+            <input type="checkbox" id="remember" class="checkbox-input" />
+            <label for="remember" class="checkbox-label">Remember me</label>
+          </div>
+          <a href="#" class="forgot-password">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+
+      <div class="divider">Or </div>
+
+      <div class="signup-text">
+        Don't have an account?
+        <a href="./sign_up.html" class="signup-link">Sign Up</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>BLOOMHER</h3>
+        <p>
+          Dedicated to empowering women with knowledge, quality products, and
+          support for their menstrual health journey.
+        </p>
+      </div>
+
+      <div class="footer-section">
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="./irregular.html">Period Education</a></li>
+          <li><a href="./lifestyle.html">Health Articles</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Company</h3>
+        <ul>
+          <li><a href="./contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Bloomher. All rights reserved.</p>
+    </div>
+  </footer>
+  <script src="../js/config.js"></script>
+  <script src="../js/login.js"></script>
+  <script src="../js/auth_ui.js"></script>
+</body>
+
+</html>
