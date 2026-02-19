@@ -180,14 +180,23 @@ async function fetchOrders() {
 
     // For each order...
     orders.forEach((o) => {
-      const orderDate = new Date(o.order_date).toLocaleDateString();
-      // Add row with Order ID, Customer Name, Product Name, Price, and a Status Selector
+      const orderDate = new Date(o.order_date).toLocaleDateString("en-GB");
+      const customerName = o.user ? o.user.name : `User #${o.user_id}`;
+      const email = o.email || (o.user ? o.user.email : "N/A");
+      const phone = o.phone_number || "N/A";
+      const address = o.shipping_address || "N/A";
+      const productName = o.product ? o.product.name : `Product #${o.product_id}`;
+
+      // Add row with new columns
       body.innerHTML += `
                 <tr>
-                    <td>#${o.id} <br><small style="color:#666">${orderDate}</small></td>
-                    <td>${o.user ? o.user.name : `User #${o.user_id}`}</td>
-                    <td>${o.product ? o.product.name : `Product #${o.product_id}`}</td>
+                    <td>${customerName}</td>
+                    <td>${email}</td>
+                    <td>${phone}</td>
+                    <td>${address}</td>
+                    <td>${productName}</td>
                     <td>₹${o.total_amount}</td>
+                    <td>${orderDate}</td>
                     <td>
                         <select onchange="updateOrderStatus(${o.id}, this.value)" class="status-select ${o.status}">
                             <option value="processing" ${o.status === "processing" ? "selected" : ""}>Processing</option>
@@ -314,7 +323,7 @@ async function handleAddProduct(e) {
       const error = await response.json();
       alert(
         ` Failed to ${pId ? "update" : "add"} product: ` +
-          (error.detail || "Unknown error"),
+        (error.detail || "Unknown error"),
       );
     }
   } catch (err) {

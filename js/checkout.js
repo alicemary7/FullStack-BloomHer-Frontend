@@ -169,7 +169,7 @@ placeOrderBtn.addEventListener("click", async () => {
 
 // Function to check if name, address, zip code etc. are filled
 function validateForm() {
-  const fields = ["name", "email", "address", "city", "state", "zip"];
+  const fields = ["name", "email", "phone", "address", "city", "state", "zip"];
   for (let f of fields) {
     if (!document.getElementById(f).value.trim()) {
       alert(`Please enter your ${f}`);
@@ -212,6 +212,9 @@ async function createOrder() {
         product_id: selectedProduct.id,
         quantity: selectedProduct.quantity,
         size: selectedProduct.selectedSize || "Regular",
+        email: document.getElementById("email").value,
+        phone_number: document.getElementById("phone").value,
+        shipping_address: `${document.getElementById("address").value}, ${document.getElementById("city").value}, ${document.getElementById("state").value} ${document.getElementById("zip").value}`
       }),
     });
 
@@ -249,6 +252,9 @@ async function createCartOrder() {
           product_id: item.product_id,
           quantity: item.quantity,
           size: item.size || "Regular",
+          email: document.getElementById("email").value,
+          phone_number: document.getElementById("phone").value,
+          shipping_address: `${document.getElementById("address").value}, ${document.getElementById("city").value}, ${document.getElementById("state").value} ${document.getElementById("zip").value}`
         }),
       }).then((r) => r.json());
     });
