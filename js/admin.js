@@ -8,8 +8,10 @@ const token = localStorage.getItem("access_token");
 // If the user is NOT an admin...
 if (userRole !== "admin") {
   // Show an alert and kick them out to the home page
-  alert("Access Denied! Admins only.");
-  window.location.href = "../index.html";
+  window.showToast("Access Denied! Admins only.", "error");
+  setTimeout(() => {
+    window.location.href = "../index.html";
+  }, 2000);
 }
 
 // The backend server address
@@ -58,9 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Handle Logout button
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
+    logoutBtn.addEventListener("click", async () => {
       // Ask "Are you sure?"
-      if (confirm("Are you sure you want to logout?")) {
+      if (await window.customConfirm("Are you sure you want to logout?")) {
         // Clear everything from browser memory and go to login page
         localStorage.clear();
         window.location.href = "./login.html";
@@ -312,7 +314,7 @@ async function handleAddProduct(e) {
 
     // If worked...
     if (response.ok) {
-      alert(` Product ${pId ? "updated" : "added"} successfully!`);
+      window.showToast(`Product ${pId ? "updated" : "added"} successfully!`, "success");
       // Reset form and hide it
       document.getElementById("addProductForm").reset();
       toggleProductForm();
@@ -321,14 +323,15 @@ async function handleAddProduct(e) {
     } else {
       // If error, show server response
       const error = await response.json();
-      alert(
-        ` Failed to ${pId ? "update" : "add"} product: ` +
+      window.showToast(
+        `Failed to ${pId ? "update" : "add"} product: ` +
         (error.detail || "Unknown error"),
+        "error"
       );
     }
   } catch (err) {
     // Network error
-    alert(" Server connection error!");
+    window.showToast("Server connection error!", "error");
   }
 }
 
@@ -367,7 +370,7 @@ async function editProduct(id) {
 // Function to deactivate/remove a product
 async function deleteProduct(id) {
   // Ask for confirmation
-  if (!confirm("Are you sure you want to deactivate this product?")) return;
+  if (!(await window.customConfirm("Are you sure you want to deactivate this product?"))) return;
 
   try {
     // Send DELETE request to server
@@ -401,16 +404,16 @@ async function updateOrderStatus(orderId, newStatus) {
 
     // If successful...
     if (response.ok) {
-      alert(`Order #${orderId} status updated to ${newStatus}`);
+      window.showToast(`Order #${orderId} status updated to ${newStatus}`, "success");
       fetchOrders(); // Refresh order table
       refreshDashboard(); // Refresh dashboard numbers
     } else {
       // Show error reason
       const error = await response.json();
-      alert("Failed to update status: " + (error.detail || "Unknown error"));
+      window.showToast("Failed to update status: " + (error.detail || "Unknown error"), "error");
     }
   } catch (err) {
     // Network error
-    alert("Server connection error!");
+    window.showToast("Server connection error!", "error");
   }
 }

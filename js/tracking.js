@@ -79,7 +79,7 @@ async function handleSearch() {
   const orderIds = orderIdInput.value.trim();
   // If they typed nothing, show an alert
   if (!orderIds) {
-    alert("Please enter an Order ID");
+    window.showToast("Please enter an Order ID", "error");
     return;
   }
 
@@ -126,9 +126,8 @@ async function handleSearch() {
 
     // Scroll the page down so the user can see the results
     trackingContent.scrollIntoView({ behavior: "smooth" });
-  } catch (err) {
     // If it fails, show why it failed
-    alert(err.message || "Error tracking order");
+    window.showToast(err.message || "Error tracking order", "error");
     // Hide the results box
     trackingContent.style.display = "none";
   } finally {

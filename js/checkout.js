@@ -86,8 +86,10 @@ async function renderCartSummary() {
 
     // If suddenly empty, send user back to cart page
     if (items.length === 0) {
-      alert("Your cart is empty! Redirecting to cart page...");
-      window.location.href = "./card.html";
+      window.showToast("Your cart is empty! Redirecting to cart page...", "info");
+      setTimeout(() => {
+        window.location.href = "./card.html";
+      }, 2000);
       return;
     }
 
@@ -153,8 +155,10 @@ placeOrderBtn.addEventListener("click", async () => {
   if (!validateForm()) return;
   // Make sure logged in
   if (!userId) {
-    alert("Please login to complete your order.");
-    window.location.href = "./login.html";
+    window.showToast("Please login to complete your order.", "error");
+    setTimeout(() => {
+      window.location.href = "./login.html";
+    }, 2000);
     return;
   }
 
@@ -172,7 +176,7 @@ function validateForm() {
   const fields = ["name", "email", "phone", "address", "city", "state", "zip"];
   for (let f of fields) {
     if (!document.getElementById(f).value.trim()) {
-      alert(`Please enter your ${f}`);
+      window.showToast(`Please enter your ${f}`, "error");
       return false;
     }
   }
@@ -189,8 +193,9 @@ function validateForm() {
     for (let f of cardFields) {
       const el = document.getElementById(f);
       if (!el || !el.value.trim()) {
-        alert(
+        window.showToast(
           `Please enter your ${f.replace(/([A-Z])/g, " $1").toLowerCase()} `,
+          "error"
         );
         return false;
       }
@@ -214,7 +219,7 @@ async function createOrder() {
         size: selectedProduct.selectedSize || "Regular",
         email: document.getElementById("email").value,
         phone_number: document.getElementById("phone").value,
-        shipping_address: `${document.getElementById("address").value}, ${document.getElementById("city").value}, ${document.getElementById("state").value} ${document.getElementById("zip").value}`
+        shipping_address: `${document.getElementById("address").value}, ${document.getElementById("city").value}, ${document.getElementById("state").value} ${document.getElementById("zip").value}`,
       }),
     });
 
@@ -223,7 +228,7 @@ async function createOrder() {
     // After creating the order, process the payment for it
     await processPayment(order.id);
   } catch (error) {
-    alert("Failed to place order. " + error.message);
+    window.showToast("Failed to place order. " + error.message, "error");
   }
 }
 
@@ -236,11 +241,10 @@ async function createCartOrder() {
     const items = await res.json();
 
     if (items.length === 0) {
-      alert("Your cart is empty!");
+      window.showToast("Your cart is empty!", "info");
       return;
     }
 
-    // Create a request for each item at once
     const orderPromises = items.map((item) => {
       return fetch(`${ORDER_API_URL}/`, {
         method: "POST",
@@ -254,29 +258,24 @@ async function createCartOrder() {
           size: item.size || "Regular",
           email: document.getElementById("email").value,
           phone_number: document.getElementById("phone").value,
-          shipping_address: `${document.getElementById("address").value}, ${document.getElementById("city").value}, ${document.getElementById("state").value} ${document.getElementById("zip").value}`
+          shipping_address: `${document.getElementById("address").value}, ${document.getElementById("city").value}, ${document.getElementById("state").value} ${document.getElementById("zip").value}`,
         }),
       }).then((r) => r.json());
     });
-
-    // Wait for all items to be ordered
     const orders = await Promise.all(orderPromises);
 
-    // Process payment for each new order
     for (const order of orders) {
       await processPayment(order.id, true);
     }
 
     const orderIds = orders.map((o) => o.id).join(",");
-    alert("Order placed successfully! ");
-    // Clear the memory of these items since they are now bought
+    window.showToast("Order placed successfully! ", "success");
     localStorage.removeItem("selectedProduct");
     localStorage.removeItem("checkoutMode");
     localStorage.removeItem("cartTotal");
-    // Go to tracking page
     window.location.href = `./tracking.html?order_id=${orderIds}`;
   } catch (err) {
-    alert("Error processing cart order: " + err.message);
+    window.showToast("Error processing cart order: " + err.message, "error");
   }
 }
 
@@ -301,14 +300,14 @@ async function processPayment(orderId, silent = false) {
 
     // If this is the final item, show success and redirect
     if (!silent) {
-      alert("Order placed successfully! ");
+      window.showToast("Order placed successfully! ", "success");
       localStorage.removeItem("selectedProduct");
       localStorage.removeItem("checkoutMode");
       localStorage.removeItem("cartTotal");
       window.location.href = `./tracking.html?order_id=${orderId}`;
     }
   } catch (err) {
-    if (!silent) alert("Payment processing failed.");
+    if (!silent) window.showToast("Payment processing failed.", "error");
   }
 }
 

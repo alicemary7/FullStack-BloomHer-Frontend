@@ -137,7 +137,7 @@ async function updateQuantity(productId, newQty) {
 // Function to remove an item from the cart
 async function removeCartItem(productId, askConfirmation = true) {
   // Ask the user "Are you sure?" unless we skip it
-  if (askConfirmation && !confirm("Remove this item?")) return;
+  if (askConfirmation && !(await window.customConfirm("Remove this item?"))) return;
 
   try {
     // Send a DELETE request to the server for this product
@@ -148,8 +148,9 @@ async function removeCartItem(productId, askConfirmation = true) {
     // If it worked, reload the cart list
     if (response.ok) {
       await fetchCartItems();
+      window.showToast("Item removed from cart", "success");
     } else {
-      alert("Failed to remove item.");
+      window.showToast("Failed to remove item.", "error");
     }
   } catch (error) {
     // Failed
