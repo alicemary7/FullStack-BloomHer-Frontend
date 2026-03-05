@@ -51,3 +51,4 @@ loginForm.addEventListener("submit", async (e) => {
     window.showToast(error.message || "Server error", "error");
   }
 });
+
