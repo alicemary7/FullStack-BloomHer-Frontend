@@ -1,15 +1,12 @@
 // Usage: Processes orders, manages payment methods, and handles the transition from cart to order placement.
 
-// Web addresses for orders and payments
 const ORDER_API_URL = `${window.API_BASE_URL}/orders`;
 const PAYMENT_API_URL = `${window.API_BASE_URL}/payments`;
 
-// Buttons and user information
 const placeOrderBtn = document.querySelector(".place-order-btn");
 const userId = localStorage.getItem("user_id");
 const token = localStorage.getItem("access_token");
 
-// Separate function to calculate price based on size (10% increments)
 function calculatePriceBySize(basePrice, size) {
   let multiplier = 1.0;
   if (size === "Small") multiplier = 0.9;
@@ -19,7 +16,6 @@ function calculatePriceBySize(basePrice, size) {
   return Math.round(basePrice * multiplier);
 }
 
-// Finding spots where we show order details
 const productNameEl = document.getElementById("product-name");
 const productSizeEl = document.getElementById("product-size");
 const productPriceEl = document.getElementById("product-price");
@@ -28,79 +24,66 @@ const orderSubtotalEl = document.getElementById("order-subtotal");
 const orderShippingEl = document.getElementById("order-shipping");
 const orderTotalEl = document.getElementById("order-total");
 
-// Finding list elements
 const orderItemsList = document.getElementById("order-items-list");
 let selectedProduct = null;
 
-// Function that runs when the page starts to set everything up
 async function init() {
-  // Check if we are checking out a full cart or just one product
   const checkoutMode = localStorage.getItem("checkoutMode");
   const storedProduct = localStorage.getItem("selectedProduct");
 
   if (checkoutMode === "cart") {
-    // Load and show items from the full cart
     await renderCartSummary();
   } else if (storedProduct) {
-    // Load and show details for just the single "Buy Now" product
     selectedProduct = JSON.parse(storedProduct);
     renderOrderSummary();
   } else {
-    // Otherwise show no items
     productNameEl.textContent = "No items selected";
   }
 
-  // Set up the section that hides/shows card numbers
   setupPaymentToggle();
 }
 
-// Function to show or hide credit card fields based on choice
 function setupPaymentToggle() {
   const paymentInputs = document.querySelectorAll('input[name="payment"]');
   const cardDetails = document.getElementById("cardDetails");
 
   paymentInputs.forEach((input) => {
-    // Watch for when the payment type changes
     input.addEventListener("change", (e) => {
-      // If "card" is selected, show the extra fields
       if (e.target.value === "card") {
         cardDetails.classList.add("active");
       } else {
-        // Otherwise hide them
         cardDetails.classList.remove("active");
       }
     });
   });
 }
 
-// Function to get the current cart from the server and show a summary
 async function renderCartSummary() {
   if (!userId) return;
 
   try {
-    // Ask the server for the latest cart
     const res = await fetch(`${window.API_BASE_URL}/cart/`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const items = await res.json();
 
-    // If suddenly empty, send user back to cart page
     if (items.length === 0) {
-      window.showToast("Your cart is empty! Redirecting to cart page...", "info");
+      window.showToast(
+        "Your cart is empty! Redirecting to cart page...",
+        "info",
+      );
       setTimeout(() => {
         window.location.href = "./card.html";
       }, 2000);
       return;
     }
 
-    // Clear and redraw cart list
     orderItemsList.innerHTML = "";
     let subtotal = 0;
 
     items.forEach((item) => {
       const product = item.product;
       const itemSize = item.size || "Regular";
-      // Calculate price based on size (10% increments)
       const pricePerItem = calculatePriceBySize(product.price, itemSize);
 
       const itemTotal = pricePerItem * item.quantity;
@@ -120,18 +103,15 @@ async function renderCartSummary() {
       orderItemsList.appendChild(itemRow);
     });
 
-    // Update displayed prices
     const total = subtotal;
     if (orderSubtotalEl) orderSubtotalEl.textContent = `₹${subtotal}`;
     if (orderShippingEl) orderShippingEl.textContent = "FREE";
     orderTotalEl.textContent = `₹${total}`;
   } catch (err) {
-    // Final error message
     productNameEl.textContent = "Error loading order items";
   }
 }
 
-// Function to show the single item if you clicked "Buy Now"
 function renderOrderSummary() {
   if (!selectedProduct) return;
 
@@ -149,11 +129,8 @@ function renderOrderSummary() {
   orderTotalEl.textContent = `₹${total}`;
 }
 
-// Watch for when the "Place Order" button is clicked
 placeOrderBtn.addEventListener("click", async () => {
-  // Check if address/fields are correctly filled
   if (!validateForm()) return;
-  // Make sure logged in
   if (!userId) {
     window.showToast("Please login to complete your order.", "error");
     setTimeout(() => {
@@ -162,7 +139,6 @@ placeOrderBtn.addEventListener("click", async () => {
     return;
   }
 
-  // Figure out if we are buying a cart or a single product
   const checkoutMode = localStorage.getItem("checkoutMode");
   if (checkoutMode === "cart") {
     await createCartOrder();
@@ -171,7 +147,6 @@ placeOrderBtn.addEventListener("click", async () => {
   }
 });
 
-// Function to check if name, address, zip code etc. are filled
 function validateForm() {
   const fields = ["name", "email", "phone", "address", "city", "state", "zip"];
   for (let f of fields) {
@@ -181,13 +156,11 @@ function validateForm() {
     }
   }
 
-  // Check which payment method is selected
   const paymentMethodInput = document.querySelector(
     'input[name="payment"]:checked',
   );
   const paymentMethod = paymentMethodInput ? paymentMethodInput.value : "card";
 
-  // If they chose card, make sure they filled card details
   if (paymentMethod === "card") {
     const cardFields = ["cardNumber", "expiry", "cvv", "cardName"];
     for (let f of cardFields) {
@@ -195,7 +168,7 @@ function validateForm() {
       if (!el || !el.value.trim()) {
         window.showToast(
           `Please enter your ${f.replace(/([A-Z])/g, " $1").toLowerCase()} `,
-          "error"
+          "error",
         );
         return false;
       }
@@ -204,7 +177,6 @@ function validateForm() {
   return true;
 }
 
-// Function to place a single order for just one product
 async function createOrder() {
   try {
     const response = await fetch(`${ORDER_API_URL}/`, {
@@ -225,14 +197,12 @@ async function createOrder() {
 
     if (!response.ok) throw new Error("Order creation failed");
     const order = await response.json();
-    // After creating the order, process the payment for it
     await processPayment(order.id);
   } catch (error) {
     window.showToast("Failed to place order. " + error.message, "error");
   }
 }
 
-// Function to turn every item in the cart into a real order
 async function createCartOrder() {
   try {
     const res = await fetch(`${window.API_BASE_URL}/cart/`, {
@@ -279,7 +249,6 @@ async function createCartOrder() {
   }
 }
 
-// Function that tells the server we are paying for our order
 async function processPayment(orderId, silent = false) {
   const paymentMethodInput = document.querySelector(
     'input[name="payment"]:checked',
@@ -298,7 +267,6 @@ async function processPayment(orderId, silent = false) {
 
     if (!res.ok) throw new Error("Payment failed");
 
-    // If this is the final item, show success and redirect
     if (!silent) {
       window.showToast("Order placed successfully! ", "success");
       localStorage.removeItem("selectedProduct");
@@ -311,5 +279,4 @@ async function processPayment(orderId, silent = false) {
   }
 }
 
-// Run the setup function
 init();

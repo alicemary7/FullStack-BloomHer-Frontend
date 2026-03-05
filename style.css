@@ -13,7 +13,6 @@ a {
   text-decoration: none;
 }
 
-/* Navigation */
 .navbar {
   background: #fff;
   padding: 20px 80px;
@@ -99,7 +98,6 @@ a {
   transform: translateY(-2px);
 }
 
-/* Hero Section */
 .hero {
   background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
     url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23c41e3a" width="1200" height="600"/></svg>');
@@ -130,7 +128,6 @@ a {
   opacity: 0.95;
 }
 
-/* Content Section */
 .content-section {
   padding: 80px 80px;
   background: #f5f5dc;
@@ -202,7 +199,6 @@ a {
   font-style: italic;
 }
 
-/* Info Cards Section */
 .info-cards {
   padding: 80px 80px;
   background: white;
@@ -242,7 +238,6 @@ a {
   line-height: 1.8;
 }
 
-/* CTA Section */
 .cta-section {
   background: linear-gradient(135deg, #c41e3a 0%, #8b1526 100%);
   padding: 80px 80px;
@@ -283,7 +278,6 @@ img {
   height: auto;
 }
 
-/* Footer */
 .footer {
   background: #1a1a1a;
   color: white;
@@ -338,7 +332,6 @@ img {
   margin: 0 auto;
 }
 
-/* Responsive Design Improvements */
 @media (max-width: 1024px) {
   .navbar {
     padding: 20px 40px;
