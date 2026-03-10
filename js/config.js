@@ -1,4 +1,4 @@
-window.API_BASE_URL = "https://fullstack-bloomher-backend.onrender.com";
+window.API_BASE_URL = "https://full-stack-bloom-her-backend.vercel.app";
 
 function injectGlobalStyles() {
     if (document.getElementById("bloomher-global-styles")) return;
