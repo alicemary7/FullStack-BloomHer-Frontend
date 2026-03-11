@@ -35,7 +35,7 @@
       <div class="contact-layout">
         <!-- Contact Form -->
         <div class="contact-form">
-          <form>
+          <form novalidate>
             <div class="form-group">
               <label for="name">Full Name</label>
               <input type="text" id="name" name="name" required />
@@ -136,8 +136,29 @@
       const subject = document.getElementById("subject").value;
       const message = document.getElementById("message").value.trim();
 
+      // Basic empty check
       if (!name || !email || !subject || !message) {
         window.showToast("Please fill in all fields", "error");
+        return;
+      }
+
+      // Name validation: At least 2 chars, letters and spaces only
+      const nameRegex = /^[a-zA-Z\s]{2,}$/;
+      if (!nameRegex.test(name)) {
+        window.showToast("Please enter a valid name (at least 2 characters)", "error");
+        return;
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        window.showToast("Please enter a valid email address", "error");
+        return;
+      }
+
+      // Message validation: Minimum 10 characters
+      if (message.length < 10) {
+        window.showToast("Message is too short (minimum 10 characters)", "error");
         return;
       }
 

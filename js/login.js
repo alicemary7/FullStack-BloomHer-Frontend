@@ -20,6 +20,19 @@ loginForm.addEventListener("submit", async (e) => {
     return;
   }
 
+  // Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    window.showToast("Please enter a valid email address", "error");
+    return;
+  }
+
+  // Password length validation
+  if (password.length < 6 && email !== "admin@gmail.com") {
+    window.showToast("Password must be at least 6 characters long", "error");
+    return;
+  }
+
   try {
     const response = await fetch(`${window.API_BASE_URL}/users/login`, {
       method: "POST",

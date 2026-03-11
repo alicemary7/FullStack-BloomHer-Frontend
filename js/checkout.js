@@ -148,12 +148,42 @@ placeOrderBtn.addEventListener("click", async () => {
 });
 
 function validateForm() {
-  const fields = ["name", "email", "phone", "address", "city", "state", "zip"];
-  for (let f of fields) {
-    if (!document.getElementById(f).value.trim()) {
-      window.showToast(`Please enter your ${f}`, "error");
-      return false;
-    }
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const address = document.getElementById("address").value.trim();
+  const city = document.getElementById("city").value.trim();
+  const state = document.getElementById("state").value.trim();
+  const zip = document.getElementById("zip").value.trim();
+
+  if (!name || !email || !phone || !address || !city || !state || !zip) {
+    window.showToast("Please fill in all shipping fields", "error");
+    return false;
+  }
+
+  // Name validation
+  if (name.length < 2 || !/^[a-zA-Z\s]+$/.test(name)) {
+    window.showToast("Please enter a valid full name", "error");
+    return false;
+  }
+
+  // Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    window.showToast("Please enter a valid email address", "error");
+    return false;
+  }
+
+  // Phone validation (10 digits)
+  if (!/^\d{10}$/.test(phone.replace(/[-\s]/g, ""))) {
+    window.showToast("Please enter a valid 10-digit phone number", "error");
+    return false;
+  }
+
+  // ZIP validation (6 digits for India)
+  if (!/^\d{6}$/.test(zip)) {
+    window.showToast("Please enter a valid 6-digit ZIP code", "error");
+    return false;
   }
 
   const paymentMethodInput = document.querySelector(
@@ -162,16 +192,38 @@ function validateForm() {
   const paymentMethod = paymentMethodInput ? paymentMethodInput.value : "card";
 
   if (paymentMethod === "card") {
-    const cardFields = ["cardNumber", "expiry", "cvv", "cardName"];
-    for (let f of cardFields) {
-      const el = document.getElementById(f);
-      if (!el || !el.value.trim()) {
-        window.showToast(
-          `Please enter your ${f.replace(/([A-Z])/g, " $1").toLowerCase()} `,
-          "error",
-        );
-        return false;
-      }
+    const cardNumber = document.getElementById("cardNumber").value.trim();
+    const expiry = document.getElementById("expiry").value.trim();
+    const cvv = document.getElementById("cvv").value.trim();
+    const cardName = document.getElementById("cardName").value.trim();
+
+    if (!cardNumber || !expiry || !cvv || !cardName) {
+      window.showToast("Please enter all card details", "error");
+      return false;
+    }
+
+    // Card number (16 digits)
+    if (!/^\d{16}$/.test(cardNumber.replace(/\s/g, ""))) {
+      window.showToast("Please enter a valid 16-digit card number", "error");
+      return false;
+    }
+
+    // Expiry (MM/YY)
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) {
+      window.showToast("Please enter expiry in MM/YY format", "error");
+      return false;
+    }
+
+    // CVV (3 digits)
+    if (!/^\d{3}$/.test(cvv)) {
+      window.showToast("Please enter a valid 3-digit CVV", "error");
+      return false;
+    }
+
+    // Name on card
+    if (cardName.length < 2) {
+      window.showToast("Please enter the name shown on the card", "error");
+      return false;
     }
   }
   return true;

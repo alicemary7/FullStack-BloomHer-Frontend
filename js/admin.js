@@ -221,14 +221,37 @@ async function handleAddProduct(e) {
   e.preventDefault();
 
   const pId = document.getElementById("p_id").value;
+  const name = document.getElementById("p_name").value.trim();
+  const description = document.getElementById("p_desc").value.trim();
+  const price = parseFloat(document.getElementById("p_price").value);
+  const stock = parseInt(document.getElementById("p_stock").value);
+  const image_url = document.getElementById("p_image").value.trim();
+  const rating = parseFloat(document.getElementById("p_rating").value) || 0;
+  const features = document.getElementById("p_features").value.trim();
+
+  if (!name || !description || isNaN(price) || isNaN(stock) || !image_url) {
+    window.showToast("Please fill in all mandatory fields correctly", "error");
+    return;
+  }
+
+  if (price <= 0) {
+    window.showToast("Price must be greater than zero", "error");
+    return;
+  }
+
+  if (stock < 0) {
+    window.showToast("Stock cannot be negative", "error");
+    return;
+  }
+
   const payload = {
-    name: document.getElementById("p_name").value,
-    description: document.getElementById("p_desc").value,
-    price: parseFloat(document.getElementById("p_price").value),
-    stock: parseInt(document.getElementById("p_stock").value),
-    image_url: document.getElementById("p_image").value,
-    rating: parseFloat(document.getElementById("p_rating").value) || 0,
-    features: document.getElementById("p_features").value,
+    name,
+    description,
+    price,
+    stock,
+    image_url,
+    rating,
+    features,
   };
 
   const method = pId ? "PUT" : "POST";

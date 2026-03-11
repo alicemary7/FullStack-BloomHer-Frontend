@@ -129,10 +129,15 @@ async function addToCart() {
     return;
   }
 
-  let quantity = parseInt(quantityInput.value) || 1;
+  let quantity = parseInt(quantityInput.value);
+  if (isNaN(quantity) || quantity <= 0) {
+    window.showToast("Please enter a valid quantity", "error");
+    return;
+  }
   if (quantity >= 99) {
     quantity = 98;
     quantityInput.value = 98;
+    window.showToast("Maximum quantity is 98", "info");
   }
 
   const selectedSize =
