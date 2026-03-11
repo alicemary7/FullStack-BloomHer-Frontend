@@ -4,7 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../styles/contact.css" />
 </head>
 
@@ -130,7 +132,7 @@
   <script src="../js/auth_ui.js"></script>
   <script>
     function handleSubmit(event) {
-      event.preventDefault(); // Prevent page reload
+      event.preventDefault();
 
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
@@ -147,7 +149,7 @@
       modal.classList.add("active");
 
       // Reset form
-      event.target.closest("form").reset();
+      event.target.reset();
     }
 
     function closeModal() {
@@ -155,7 +157,6 @@
       modal.classList.remove("active");
     }
 
-    // Update button click to pass event
     document.querySelector("form").addEventListener("submit", handleSubmit);
   </script>
 </body>
