@@ -44,7 +44,7 @@ async function fetchProducts() {
           <div class="product-price">₹${product.price}</div>
           <div style="display: flex; justify-content: space-between">
             <button class="btn-add-cart" style="width: 150px" onclick="addToCart(${product.id})">
-              Add to Cart
+              Add to Cartty
             </button>
             <button class="btn-buy" style="width: 150px" onclick="buyNow(${product.id})">
               Buy Now
@@ -97,31 +97,8 @@ async function addToCart(productId) {
 }
 
 async function buyNow(productId) {
-  if (!userId) {
-    window.showToast("Please login first!", "info");
-    setTimeout(() => {
-      window.location.href = "./login.html";
-    }, 1500);
-    return;
-  }
-
-  try {
-    const res = await fetch(`${API_URL}/${productId}`);
-    const product = await res.json();
-
-    const productData = {
-      id: product.id,
-      name: product.name,
-      image: product.image_url,
-      selectedSize: "Regular",
-      quantity: 1,
-      price: product.price,
-    };
-
-    localStorage.setItem("selectedProduct", JSON.stringify(productData));
-
-    window.location.href = "./address.html";
-  } catch (err) { }
+  // Navigate to product detail page instead of direct checkout
+  window.location.href = `./product_detail.html?id=${productId}`;
 }
 
 fetchProducts();
