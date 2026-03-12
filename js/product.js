@@ -44,7 +44,7 @@ async function fetchProducts() {
           <div class="product-price">₹${product.price}</div>
           <div style="display: flex; justify-content: space-between">
             <button class="btn-add-cart" style="width: 150px" onclick="addToCart(${product.id})">
-              Add to Cartty
+              Add to Cart
             </button>
             <button class="btn-buy" style="width: 150px" onclick="buyNow(${product.id})">
               Buy Now
@@ -102,4 +102,3 @@ async function buyNow(productId) {
 }
 
 fetchProducts();
-
