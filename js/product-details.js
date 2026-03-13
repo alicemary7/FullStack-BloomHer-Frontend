@@ -112,11 +112,55 @@ async function fetchProductDetails() {
 
     if (loadingContent) loadingContent.style.display = "none";
     if (productContent) productContent.style.display = "block";
+
+    // Fetch and Display Reviews
+    fetchAndDisplayReviews();
+
   } catch (err) {
     if (loadingContent) {
       loadingContent.style.color = "red";
       loadingContent.textContent = "Error: " + err.message;
     }
+  }
+}
+
+async function fetchAndDisplayReviews() {
+  const reviewsList = document.getElementById("reviewsList");
+  const reviewCount = document.getElementById("reviewCount");
+  
+  try {
+    const response = await fetch(`${window.API_BASE_URL}/reviews/product/${productId}`);
+    if (!response.ok) throw new Error("Could not fetch reviews");
+    
+    const reviews = await response.json();
+    if (reviewCount) reviewCount.textContent = `(${reviews.length} reviews)`;
+    
+    if (reviews.length === 0) {
+      reviewsList.innerHTML = '<p style="color: #888; font-style: italic;">No reviews yet. Be the first to review!</p>';
+      return;
+    }
+
+    // Sort by newest first
+    reviews.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    reviewsList.innerHTML = reviews.map(review => `
+      <div style="margin-bottom: 2rem; border-bottom: 1px solid #f5f5f5; padding-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <div style="font-weight: 600; color: #333;">Customer</div>
+          <div style="color: #ffc107; font-size: 0.9rem;">
+            ${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}
+          </div>
+        </div>
+        <p style="color: #555; line-height: 1.6; margin: 0;">${review.comment}</p>
+        <div style="font-size: 0.75rem; color: #999; margin-top: 0.8rem;">
+          ${new Date(review.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+        </div>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    console.error("Reviews error:", err);
+    if (reviewsList) reviewsList.innerHTML = '<p style="color: #888;">Unable to load reviews.</p>';
   }
 }
 

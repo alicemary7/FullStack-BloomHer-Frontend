@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Write a Review - BloomHer</title>
+    <link rel="stylesheet" href="../styles/regularflow.css">
+    <style>
+        :root {
+            --primary: #c23b5a;
+            --primary-dark: #a82e4a;
+            --secondary: #4caf50;
+            --light-bg: #f9f4ed;
+            --white: #fff;
+            --gray: #e0e0e0;
+            --dark: #333;
+            --star-gold: #ffc107;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .review-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            width: 90%;
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .product-preview {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .product-preview img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .product-info h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+
+        .product-info p {
+            margin: 4px 0 0;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .rating-stars {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 0 20px;
+        }
+
+        .rating-stars input {
+            display: none;
+        }
+
+        .rating-stars label {
+            font-size: 2.5rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .rating-stars input:checked ~ label,
+        .rating-stars label:hover,
+        .rating-stars label:hover ~ label {
+            color: var(--star-gold);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--gray);
+            border-radius: 8px;
+            min-height: 120px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(194, 59, 90, 0.25);
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(194, 59, 90, 0.35);
+        }
+
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .back-to-orders {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .back-to-orders:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .review-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="review-container">
+        <h1>Share Your Experience</h1>
+        <p class="subtitle">Your feedback helps us grow and helps others choose better.</p>
+
+        <div id="product-display" class="product-preview">
+            <img id="item-image" src="../assets/placeholder.jpg" alt="Product">
+            <div class="product-info">
+                <h3 id="item-name">Loading Product...</h3>
+                <p id="item-details">Size: - | Quantity: -</p>
+            </div>
+        </div>
+
+        <form id="review-form">
+            <div class="form-group">
+                <label>Overall Rating</label>
+                <div class="rating-stars">
+                    <input type="radio" name="rating" value="5" id="star5"><label for="star5">★</label>
+                    <input type="radio" name="rating" value="4" id="star4"><label for="star4">★</label>
+                    <input type="radio" name="rating" value="3" id="star3"><label for="star3">★</label>
+                    <input type="radio" name="rating" value="2" id="star2"><label for="star2">★</label>
+                    <input type="radio" name="rating" value="1" id="star1"><label for="star1">★</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="comment">Your Review</label>
+                <textarea id="comment" placeholder="What did you like or dislike? How was the quality?" required></textarea>
+            </div>
+
+            <button type="submit" id="submit-btn" class="btn-submit">Submit Review</button>
+        </form>
+
+        <a href="./tracking.html" class="back-to-orders">← Back to My Orders</a>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/review.js"></script>
+</body>
+</html>

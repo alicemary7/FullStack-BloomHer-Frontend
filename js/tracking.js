@@ -114,8 +114,16 @@ function renderOrders(orders) {
             </div>
           </div>
         </div>
+        ${status === 'delivered' ? `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <a href="./review.html?productId=${order.product_id}&orderId=${order.id}" 
+             style="display: inline-block; padding: 10px 25px; background: var(--primary); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(194, 59, 90, 0.2); transition: all 0.2s;">
+            Rate & Review Product
+          </a>
+        </div>
+        ` : ""}
         <div style="margin-top: 15px; padding: 12px; background: #f8fbff; border-radius: 8px; border-left: 3px solid #3b82f6; font-size: 0.85rem; color: #1e40af;">
-          <strong>Estimated Delivery:</strong> ${deliveryDateStr}
+          <strong>${status === 'delivered' ? 'Delivered on' : 'Estimated Delivery'}:</strong> ${deliveryDateStr}
         </div>
       ` : `
         <div style="background: #fff5f5; padding: 12px; border-radius: 8px; color: #c23b5a; font-size: 0.9rem; text-align: center; border: 1px dashed #feb2b2;">
