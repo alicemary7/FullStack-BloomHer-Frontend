@@ -24,7 +24,32 @@ async function init() {
         return;
     }
 
+    await checkExistingReview();
     await fetchProductDetails();
+}
+
+async function checkExistingReview() {
+    try {
+        const response = await fetch(`${REVIEW_API_URL}/check/${productId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.reviewed) {
+                window.showToast("You have already reviewed this product.", "info");
+                reviewForm.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #666; background: #fff4f7; border-radius: 12px; border: 1px dashed var(--primary);">
+                        <p style="font-weight: 600; color: var(--primary);">Review Already Submitted</p>
+                        <p>You can only review each product once. Thank you for your feedback!</p>
+                        <a href="./product_detail.html?id=${productId}" class="back-to-orders" style="display:inline-block; margin-top: 10px;">View Your Review</a>
+                    </div>
+                `;
+            }
+        }
+    } catch (err) {
+        console.error("Check review error:", err);
+    }
 }
 
 async function fetchProductDetails() {
