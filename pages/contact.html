@@ -131,6 +131,15 @@
     async function handleSubmit(event) {
       event.preventDefault();
 
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        window.showToast("You must be logged in to send a message", "error");
+        setTimeout(() => {
+          window.location.href = "./login.html";
+        }, 2000);
+        return;
+      }
+
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
       const subject = document.getElementById("subject").value;
@@ -168,6 +177,7 @@
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
           },
           body: JSON.stringify(payload)
         });
