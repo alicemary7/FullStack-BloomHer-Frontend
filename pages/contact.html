@@ -128,7 +128,7 @@
   <script src="../js/config.js"></script>
   <script src="../js/auth_ui.js"></script>
   <script>
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
       event.preventDefault();
 
       const name = document.getElementById("name").value.trim();
@@ -162,12 +162,29 @@
         return;
       }
 
-      // Show success modal
-      const modal = document.getElementById("successModal");
-      modal.classList.add("active");
+      try {
+        const payload = { name, email, subject, message };
+        const response = await fetch(`${window.API_BASE_URL}/contacts/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload)
+        });
 
-      // Reset form
-      event.target.reset();
+        if (response.ok) {
+          // Show success modal
+          const modal = document.getElementById("successModal");
+          modal.classList.add("active");
+          
+          // Reset form
+          event.target.reset();
+        } else {
+          window.showToast("Failed to send message", "error");
+        }
+      } catch (err) {
+        window.showToast("Server connection error!", "error");
+      }
     }
 
     function closeModal() {

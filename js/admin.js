@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (sectionId === "products") fetchProducts();
         if (sectionId === "users") fetchUsers();
         if (sectionId === "orders") fetchOrders();
+        if (sectionId === "contacts") fetchContacts();
         if (sectionId === "dashboard") refreshDashboard();
       }
     });
@@ -115,6 +116,30 @@ async function fetchUsers() {
                     <td>${u.name}</td>
                     <td>${u.email}</td>
                     <td><span class="badge" style="background:${u.role === "admin" ? "#ffe2e5" : "#f0f0f0"}">${u.role}</span></td>
+                </tr>
+            `;
+    });
+  } catch (err) { }
+}
+
+async function fetchContacts() {
+  try {
+    const response = await fetch(`${BASE_URL}/contacts/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const contacts = await response.json();
+    const body = document.getElementById("contactsBody");
+    body.innerHTML = "";
+
+    contacts.forEach((c) => {
+      const contactDate = new Date(c.created_at).toLocaleDateString("en-GB");
+      body.innerHTML += `
+                <tr>
+                    <td>${contactDate}</td>
+                    <td>${c.name}</td>
+                    <td><a href="mailto:${c.email}">${c.email}</a></td>
+                    <td>${c.subject}</td>
+                    <td style="max-width: 300px; white-space: normal;">${c.message}</td>
                 </tr>
             `;
     });
