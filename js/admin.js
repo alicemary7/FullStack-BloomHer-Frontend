@@ -69,7 +69,6 @@ function openAddProductForm() {
   document.getElementById("formTitle").innerText = "Add New Product";
   document.getElementById("addProductForm").reset();
   document.getElementById("p_id").value = "";
-  document.getElementById("p_rating").value = "0";
   document.getElementById("p_features").value = "";
   container.style.display = "block";
 }
@@ -226,7 +225,6 @@ async function handleAddProduct(e) {
   const price = parseFloat(document.getElementById("p_price").value);
   const stock = parseInt(document.getElementById("p_stock").value);
   const image_url = document.getElementById("p_image").value.trim();
-  const rating = parseFloat(document.getElementById("p_rating").value) || 0;
   const features = document.getElementById("p_features").value.trim();
 
   if (!name || !description || isNaN(price) || isNaN(stock) || !image_url) {
@@ -250,7 +248,6 @@ async function handleAddProduct(e) {
     price,
     stock,
     image_url,
-    rating,
     features,
   };
 
@@ -298,7 +295,6 @@ async function editProduct(id) {
     document.getElementById("p_stock").value = p.stock;
     document.getElementById("p_image").value = p.image_url;
     document.getElementById("p_desc").value = p.description;
-    document.getElementById("p_rating").value = p.rating || 0;
     document.getElementById("p_features").value = p.features || "";
 
     document.getElementById("formTitle").innerText = "Edit Product";
