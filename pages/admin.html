@@ -350,6 +350,30 @@
           </table>
         </div>
       </section>
+      </section>
+
+      <!-- Cancel Reason Modal -->
+      <div id="cancelReasonModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 25px; border-radius: var(--radius); width: 100%; max-width: 400px; box-shadow: var(--shadow);">
+          <h3 style="margin-bottom: 1rem; color: var(--primary);">Cancel Order</h3>
+          <p style="margin-bottom: 1rem; color: #666;">Please select a reason for cancelling this order:</p>
+          <input type="hidden" id="cancelOrderId" />
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer;">
+              <input type="radio" name="cancelReason" value="Out of Stock" checked>
+              <span>Out of Stock</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="radio" name="cancelReason" value="Customer Requested">
+              <span>Customer Requested</span>
+            </label>
+          </div>
+          <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button onclick="closeCancelModal()" style="padding: 8px 15px; border: 1px solid #ccc; background: white; border-radius: 5px; cursor: pointer;">Go Back</button>
+            <button onclick="confirmCancelOrder()" style="padding: 8px 15px; border: none; background: var(--primary); color: white; border-radius: 5px; cursor: pointer;">Confirm Cancel</button>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
