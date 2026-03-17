@@ -22,6 +22,66 @@ const loadingContent = document.getElementById("loadingContent");
 const productContent = document.getElementById("productContent");
 
 let baseProductPrice = 0;
+let isOutOfStock = false;
+
+function applyOutOfStockUI() {
+  // Dim the product image
+  if (productImage) {
+    productImage.style.opacity = "0.5";
+    productImage.style.filter = "grayscale(40%)";
+  }
+
+  // Insert badge near price
+  const priceEl = document.getElementById("productPrice");
+  if (priceEl && !document.getElementById("outOfStockBadge")) {
+    const badge = document.createElement("div");
+    badge.id = "outOfStockBadge";
+    badge.textContent = "OUT OF STOCK";
+    badge.style.cssText = [
+      "display:inline-block",
+      "background:#c0392b",
+      "color:#fff",
+      "font-size:0.75rem",
+      "font-weight:700",
+      "padding:5px 14px",
+      "border-radius:20px",
+      "letter-spacing:0.5px",
+      "margin-top:10px",
+    ].join(";");
+    priceEl.insertAdjacentElement("afterend", badge);
+  }
+
+  // Disable quantity input
+  if (quantityInput) {
+    quantityInput.disabled = true;
+    quantityInput.style.opacity = "0.5";
+  }
+
+  // Disable size radios
+  document.querySelectorAll('input[name="size"]').forEach(r => {
+    r.disabled = true;
+  });
+
+  // Disable and style action buttons
+  const disabledStyle = [
+    "background:#ccc",
+    "color:#777",
+    "cursor:not-allowed",
+    "border:none",
+    "opacity:0.75",
+  ].join(";");
+
+  if (addToCartBtn) {
+    addToCartBtn.disabled = true;
+    addToCartBtn.textContent = "Out of Stock";
+    addToCartBtn.style.cssText = disabledStyle;
+  }
+  if (buyNowBtn) {
+    buyNowBtn.disabled = true;
+    buyNowBtn.textContent = "Out of Stock";
+    buyNowBtn.style.cssText = disabledStyle;
+  }
+}
 
 function updatePriceBySize() {
   const selectedSize =
@@ -110,6 +170,12 @@ async function fetchProductDetails() {
       featuresBox.innerHTML = featuresHtml;
     }
 
+    // Stock check — apply out-of-stock UI if needed
+    if (product.stock <= 0) {
+      isOutOfStock = true;
+      applyOutOfStockUI();
+    }
+
     if (loadingContent) loadingContent.style.display = "none";
     if (productContent) productContent.style.display = "block";
 
@@ -165,6 +231,10 @@ async function fetchAndDisplayReviews() {
 }
 
 async function addToCart() {
+  if (isOutOfStock) {
+    window.showToast("Sorry, this product is currently out of stock.", "error");
+    return;
+  }
   if (!userId) {
     window.showToast("Please login first!", "info");
     setTimeout(() => {
@@ -218,6 +288,10 @@ async function addToCart() {
 }
 
 async function buyNow() {
+  if (isOutOfStock) {
+    window.showToast("Sorry, this product is currently out of stock.", "error");
+    return;
+  }
   if (!userId) {
     window.showToast("Please login first!", "info");
     setTimeout(() => {

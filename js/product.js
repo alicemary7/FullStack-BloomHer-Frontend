@@ -29,11 +29,14 @@ async function fetchProducts() {
 
       const pageLink = `./product_detail.html?id=${product.id}`;
 
+      const isOutOfStock = product.stock <= 0;
+
       productCard.innerHTML = `
-        <div class="product-image">
+        <div class="product-image" style="position: relative;">
           <a href="${pageLink}">
-            <img src="${product.image_url}" height="330px" alt="${product.name}" />
+            <img src="${product.image_url}" height="330px" alt="${product.name}" style="${isOutOfStock ? 'opacity:0.55; filter: grayscale(40%);' : ''}" />
           </a>
+          ${isOutOfStock ? '<div style="position:absolute;top:12px;left:12px;background:#c0392b;color:#fff;font-size:0.75rem;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.5px;">OUT OF STOCK</div>' : ''}
         </div>
         <div class="product-info">
           <h3><a href="${pageLink}" style="text-decoration: none; color: inherit;">${product.name}</a></h3>
@@ -43,12 +46,11 @@ async function fetchProducts() {
           <p>${product.description}</p>
           <div class="product-price">₹${product.price}</div>
           <div style="display: flex; justify-content: space-between">
-            <button class="btn-add-cart" style="width: 150px" onclick="addToCart(${product.id})">
-              Add to Cart
-            </button>
-            <button class="btn-buy" style="width: 150px" onclick="buyNow(${product.id})">
-              Buy Now
-            </button>
+            ${isOutOfStock
+              ? `<button disabled style="width:100%;background:#ccc;color:#666;border:none;padding:10px;border-radius:6px;cursor:not-allowed;font-weight:600;">Out of Stock</button>`
+              : `<button class="btn-add-cart" style="width: 150px" onclick="addToCart(${product.id})">Add to Cart</button>
+                 <button class="btn-buy" style="width: 150px" onclick="buyNow(${product.id})">Buy Now</button>`
+            }
           </div>
         </div>
       `;

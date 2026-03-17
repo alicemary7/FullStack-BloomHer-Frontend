@@ -84,12 +84,18 @@ async function fetchProducts() {
     body.innerHTML = "";
 
     products.forEach((p) => {
+      const stockBadge = p.stock <= 0
+        ? `<span style="display:inline-block;margin-left:6px;background:#c0392b;color:#fff;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:12px;">Out of Stock</span>`
+        : p.stock <= 5
+          ? `<span style="display:inline-block;margin-left:6px;background:#e67e22;color:#fff;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:12px;">Low Stock</span>`
+          : "";
+
       body.innerHTML += `
                 <tr>
                     <td><img src="${p.image_url}" width="50" style="border-radius: 5px;"></td>
                     <td>${p.name}</td>
                     <td>₹${p.price}</td>
-                    <td>${p.stock}</td>
+                    <td>${p.stock}${stockBadge}</td>
                     <td>
                         <button class="status processing" style="border:none; cursor:pointer;" onclick="editProduct(${p.id})">Edit</button>
                         <button class="status pending" style="border:none; cursor:pointer;" onclick="deleteProduct(${p.id})">Deactivate</button>
@@ -179,7 +185,6 @@ async function fetchOrders() {
                             <option value="delivered" ${o.status === "delivered" ? "selected" : ""}>Delivered</option>
                             <option value="cancelled" ${o.status === "cancelled" ? "selected" : ""}>Cancelled</option>
                         </select>
-                        ${o.status === "cancelled" && o.cancel_reason ? `<div style="color:red; font-size: 0.8em; margin-top:5px;">Reason: ${o.cancel_reason}</div>` : ""}
                     </td>
                 </tr>
             `;
@@ -234,7 +239,6 @@ async function refreshDashboard() {
                             <option value="delivered" ${o.status === "delivered" ? "selected" : ""}>Delivered</option>
                             <option value="cancelled" ${o.status === "cancelled" ? "selected" : ""}>Cancelled</option>
                           </select>
-                          ${o.status === "cancelled" && o.cancel_reason ? `<div style="color:red; font-size: 0.8em; margin-top:5px;">Reason: ${o.cancel_reason}</div>` : ""}
                         </td>
                     </tr>
                 `;
@@ -347,25 +351,18 @@ async function deleteProduct(id) {
   } catch (err) { }
 }
 
-async function updateOrderStatus(orderId, newStatus, cancelReason = "") {
-  if (newStatus === "cancelled" && !cancelReason) {
-    document.getElementById("cancelOrderId").value = orderId;
-    document.getElementById("cancelReasonModal").style.display = "flex";
-    return;
-  }
-
+async function updateOrderStatus(orderId, newStatus) {
   try {
-    const url = newStatus === "cancelled" 
-      ? `${BASE_URL}/orders/${orderId}/status?new_status=${newStatus}&cancel_reason=${encodeURIComponent(cancelReason)}`
-      : `${BASE_URL}/orders/${orderId}/status?new_status=${newStatus}`;
-
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${BASE_URL}/orders/${orderId}/status?new_status=${newStatus}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (response.ok) {
       window.showToast(`Order #${orderId} status updated to ${newStatus}`, "success");
@@ -374,26 +371,9 @@ async function updateOrderStatus(orderId, newStatus, cancelReason = "") {
     } else {
       const error = await response.json();
       window.showToast("Failed to update status: " + (error.detail || "Unknown error"), "error");
-      fetchOrders();
-      refreshDashboard();
     }
   } catch (err) {
     window.showToast("Server connection error!", "error");
-    fetchOrders();
-    refreshDashboard();
   }
-}
-
-function closeCancelModal() {
-  document.getElementById("cancelReasonModal").style.display = "none";
-  fetchOrders(); 
-  refreshDashboard();
-}
-
-function confirmCancelOrder() {
-  const orderId = document.getElementById("cancelOrderId").value;
-  const reason = document.querySelector('input[name="cancelReason"]:checked').value;
-  document.getElementById("cancelReasonModal").style.display = "none";
-  updateOrderStatus(orderId, "cancelled", reason);
 }
 
