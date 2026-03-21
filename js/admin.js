@@ -32,7 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
         targetSection.style.display = "block";
         setTimeout(() => targetSection.classList.add("active"), 10);
 
-        if (sectionId === "products") fetchProducts();
+        if (sectionId === "products") { fetchProducts(); startProductsAutoRefresh(); }
+        else { stopProductsAutoRefresh(); }
         if (sectionId === "users") fetchUsers();
         if (sectionId === "orders") fetchOrders();
         if (sectionId === "contacts") fetchContacts();
@@ -372,6 +373,37 @@ async function deleteProduct(id) {
   }
 }
 
+// Helper: refresh Products table if it's currently visible
+function refreshProductsIfVisible() {
+  const productsSection = document.getElementById("products");
+  if (productsSection && productsSection.style.display !== "none") {
+    fetchProducts();
+  }
+}
+
+// Auto-refresh interval handle
+let productsAutoRefreshInterval = null;
+
+// Start / stop auto-refresh when switching sections
+function startProductsAutoRefresh() {
+  if (productsAutoRefreshInterval) return; // already running
+  productsAutoRefreshInterval = setInterval(() => {
+    const productsSection = document.getElementById("products");
+    if (productsSection && productsSection.style.display !== "none") {
+      fetchProducts();
+    } else {
+      stopProductsAutoRefresh();
+    }
+  }, 30000); // every 30 seconds
+}
+
+function stopProductsAutoRefresh() {
+  if (productsAutoRefreshInterval) {
+    clearInterval(productsAutoRefreshInterval);
+    productsAutoRefreshInterval = null;
+  }
+}
+
 async function updateOrderStatus(orderId, newStatus) {
   try {
     const response = await fetch(
@@ -389,6 +421,8 @@ async function updateOrderStatus(orderId, newStatus) {
       window.showToast(`Order #${orderId} status updated to ${newStatus}`, "success");
       fetchOrders();
       refreshDashboard();
+      // Stock changes when cancelling or un-cancelling — always sync the Products table
+      refreshProductsIfVisible();
     } else {
       const error = await response.json();
       window.showToast("Failed to update status: " + (error.detail || "Unknown error"), "error");
