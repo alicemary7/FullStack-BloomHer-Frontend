@@ -394,7 +394,7 @@ function startProductsAutoRefresh() {
     } else {
       stopProductsAutoRefresh();
     }
-  }, 30000); // every 30 seconds
+  }, 5000); // every 5 seconds
 }
 
 function stopProductsAutoRefresh() {
