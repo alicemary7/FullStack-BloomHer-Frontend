@@ -33,6 +33,7 @@ async function fetchCartItems() {
     const cartItems = await response.json();
     renderCartItems(cartItems);
   } catch (error) {
+     window.showToast(error.message || "Error loading orders", "error");
   }
 }
 
@@ -107,7 +108,9 @@ async function updateQuantity(productId, newQty) {
       },
     );
     if (response.ok) await fetchCartItems();
-  } catch (err) {
+  } catch (error) {
+         window.showToast(error.message || "Error loading orders", "error");
+
   }
 }
 
@@ -126,6 +129,8 @@ async function removeCartItem(productId, askConfirmation = true) {
       window.showToast("Failed to remove item.", "error");
     }
   } catch (error) {
+         window.showToast(error.message || "Error loading orders", "error");
+
   }
 }
 

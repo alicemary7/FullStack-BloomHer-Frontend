@@ -103,7 +103,10 @@ async function fetchProducts() {
                 </tr>
             `;
     });
-  } catch (err) { }
+  } catch (error) {
+     window.showToast(error.message || "Error loading orders", "error");
+
+   }
 }
 
 async function fetchUsers() {
@@ -125,7 +128,10 @@ async function fetchUsers() {
                 </tr>
             `;
     });
-  } catch (err) { }
+  } catch (error) {
+     window.showToast(error.message || "Error loading orders", "error");
+
+   }
 }
 
 async function fetchContacts() {
@@ -149,7 +155,10 @@ async function fetchContacts() {
                 </tr>
             `;
     });
-  } catch (err) { }
+  } catch (error) {
+     window.showToast(error.message || "Error loading orders", "error");
+
+   }
 }
 
 async function fetchOrders() {
@@ -189,7 +198,10 @@ async function fetchOrders() {
                 </tr>
             `;
     });
-  } catch (err) { }
+  } catch (error) { 
+     window.showToast(error.message || "Error loading orders", "error");
+
+  }
 }
 
 async function refreshDashboard() {
@@ -244,7 +256,10 @@ async function refreshDashboard() {
                 `;
         });
     }
-  } catch (err) { }
+  } catch (error) {
+     window.showToast(error.message || "Error loading orders", "error");
+
+   }
 }
 
 async function handleAddProduct(e) {
@@ -334,7 +349,10 @@ async function editProduct(id) {
     document
       .getElementById("addProductFormContainer")
       .scrollIntoView({ behavior: "smooth" });
-  } catch (err) { }
+  } catch (err) { 
+     window.showToast(error.message || "Error loading orders", "error");
+
+  }
 }
 
 async function deleteProduct(id) {
@@ -348,7 +366,10 @@ async function deleteProduct(id) {
     if (response.ok) {
       fetchProducts();
     }
-  } catch (err) { }
+  } catch (err) { 
+     window.showToast(error.message || "Error loading orders", "error");
+
+  }
 }
 
 async function updateOrderStatus(orderId, newStatus) {
