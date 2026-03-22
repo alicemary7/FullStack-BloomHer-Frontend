@@ -79,6 +79,7 @@ async function fetchProducts() {
   try {
     const response = await fetch(`${BASE_URL}/products/`, {
       headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store"
     });
     const products = await response.json();
     const body = document.getElementById("productsBody");
@@ -105,9 +106,9 @@ async function fetchProducts() {
             `;
     });
   } catch (error) {
-     window.showToast(error.message || "Error loading orders", "error");
+    window.showToast(error.message || "Error loading orders", "error");
 
-   }
+  }
 }
 
 async function fetchUsers() {
@@ -130,9 +131,9 @@ async function fetchUsers() {
             `;
     });
   } catch (error) {
-     window.showToast(error.message || "Error loading orders", "error");
+    window.showToast(error.message || "Error loading orders", "error");
 
-   }
+  }
 }
 
 async function fetchContacts() {
@@ -157,9 +158,9 @@ async function fetchContacts() {
             `;
     });
   } catch (error) {
-     window.showToast(error.message || "Error loading orders", "error");
+    window.showToast(error.message || "Error loading orders", "error");
 
-   }
+  }
 }
 
 async function fetchOrders() {
@@ -199,8 +200,8 @@ async function fetchOrders() {
                 </tr>
             `;
     });
-  } catch (error) { 
-     window.showToast(error.message || "Error loading orders", "error");
+  } catch (error) {
+    window.showToast(error.message || "Error loading orders", "error");
 
   }
 }
@@ -219,6 +220,7 @@ async function refreshDashboard() {
 
     const productRes = await fetch(`${BASE_URL}/products/`, {
       headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store"
     });
     const products = await productRes.json();
     document.getElementById("stat-total-products").innerText = products.length;
@@ -258,9 +260,9 @@ async function refreshDashboard() {
         });
     }
   } catch (error) {
-     window.showToast(error.message || "Error loading orders", "error");
+    window.showToast(error.message || "Error loading orders", "error");
 
-   }
+  }
 }
 
 async function handleAddProduct(e) {
@@ -333,6 +335,7 @@ async function editProduct(id) {
   try {
     const response = await fetch(`${BASE_URL}/products/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store"
     });
     const p = await response.json();
 
@@ -350,8 +353,8 @@ async function editProduct(id) {
     document
       .getElementById("addProductFormContainer")
       .scrollIntoView({ behavior: "smooth" });
-  } catch (err) { 
-     window.showToast(error.message || "Error loading orders", "error");
+  } catch (err) {
+    window.showToast(error.message || "Error loading orders", "error");
 
   }
 }
@@ -367,8 +370,8 @@ async function deleteProduct(id) {
     if (response.ok) {
       fetchProducts();
     }
-  } catch (err) { 
-     window.showToast(error.message || "Error loading orders", "error");
+  } catch (err) {
+    window.showToast(error.message || "Error loading orders", "error");
 
   }
 }
@@ -394,7 +397,7 @@ function startProductsAutoRefresh() {
     } else {
       stopProductsAutoRefresh();
     }
-  }, 5000); // every 5 seconds
+  }, 3000); // every 3 seconds
 }
 
 function stopProductsAutoRefresh() {

@@ -12,12 +12,12 @@ function getRatingStars(rating) {
   const halfStar = rating % 1 >= 0.5 ? 1 : 0;
   const emptyStars = 5 - fullStars - halfStar;
 
-  return "★".repeat(fullStars) + (halfStar ? "½" : "") + "☆".repeat(emptyStars);
+  return '<i class="fas fa-star" style="color: #ffc107;"></i>'.repeat(fullStars) + (halfStar ? '<i class="fas fa-star-half-alt" style="color: #ffc107;"></i>' : "") + '<i class="far fa-star" style="color: #ffc107;"></i>'.repeat(emptyStars);
 }
 
 async function fetchProducts() {
   try {
-    const response = await fetch(API_URL);
+    const response = await fetch(API_URL, { cache: "no-store" });
     if (!response.ok) throw new Error("Network response was not ok");
 
     const products = await response.json();

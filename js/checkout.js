@@ -288,6 +288,11 @@ async function createCartOrder() {
 
     for (const order of orders) {
       await processPayment(order.id, true);
+      // Remove item from cart after successful order creation
+      await fetch(`${window.API_BASE_URL}/cart/item/${order.product_id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
     }
 
     const orderIds = orders.map((o) => o.id).join(",");

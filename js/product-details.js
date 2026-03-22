@@ -108,7 +108,7 @@ async function fetchProductDetails() {
   }
 
   try {
-    const res = await fetch(`${PRODUCT_API_URL}/${productId}`);
+    const res = await fetch(`${PRODUCT_API_URL}/${productId}`, { cache: 'no-store' });
     if (!res.ok) {
       if (res.status === 404) throw new Error("Product not found");
       throw new Error("Failed to fetch product details");
