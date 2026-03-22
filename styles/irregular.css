@@ -189,9 +189,10 @@ a {
 }
 
 .content-section ul li:before {
-  content: "✓";
+  content: "\f00c";
+  font-family: "Font Awesome 6 Free";
   color: #4caf50;
-  font-weight: bold;
+  font-weight: 900;
   position: absolute;
   left: 0;
   font-size: 20px;

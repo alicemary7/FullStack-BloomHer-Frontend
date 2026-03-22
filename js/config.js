@@ -111,9 +111,9 @@ window.showToast = function (message, type = "info") {
     const toast = document.createElement("div");
     toast.className = `toast ${type}`;
 
-    let icon = "ℹ️";
-    if (type === "success") icon = "✅";
-    if (type === "error") icon = "❌";
+    let icon = '<i class="fas fa-info-circle"></i>';
+    if (type === "success") icon = '<i class="fas fa-check-circle"></i>';
+    if (type === "error") icon = '<i class="fas fa-times-circle"></i>';
 
     toast.innerHTML = `
         <span class="toast-icon">${icon}</span>

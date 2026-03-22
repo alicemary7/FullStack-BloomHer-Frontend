@@ -263,7 +263,9 @@ a {
 }
 
 .warning-box li:before {
-  content: "⚠️";
+  content: "\f071";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
   position: absolute;
   left: 0;
 }

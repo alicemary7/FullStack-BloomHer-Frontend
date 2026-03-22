@@ -135,8 +135,8 @@ async function fetchProductDetails() {
       const fullStars = Math.floor(rating);
       const halfStar = rating % 1 >= 0.5 ? 1 : 0;
       const emptyStars = 5 - fullStars - halfStar;
-      starSpan.textContent =
-        "★".repeat(fullStars) + (halfStar ? "½" : "") + "☆".repeat(emptyStars);
+      starSpan.innerHTML =
+        '<i class="fas fa-star"></i>'.repeat(fullStars) + (halfStar ? '<i class="fas fa-star-half-alt"></i>' : "") + '<i class="far fa-star"></i>'.repeat(emptyStars);
     }
 
     if (featuresBox) {
@@ -165,7 +165,7 @@ async function fetchProductDetails() {
       }
 
       features.forEach((f) => {
-        featuresHtml += `<div class="feature-item"><span class="checkmark">✓</span><span>${f}</span></div>`;
+        featuresHtml += `<div class="feature-item"><span class="checkmark"><i class="fas fa-check"></i></span><span>${f}</span></div>`;
       });
       featuresBox.innerHTML = featuresHtml;
     }
@@ -214,7 +214,7 @@ async function fetchAndDisplayReviews() {
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
           <div style="font-weight: 600; color: #333;">Customer</div>
           <div style="color: #ffc107; font-size: 0.9rem;">
-            ${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}
+            ${'<i class="fas fa-star"></i>'.repeat(review.rating)}${'<i class="far fa-star"></i>'.repeat(5 - review.rating)}
           </div>
         </div>
         <p style="color: #555; line-height: 1.6; margin: 0;">${review.comment}</p>
