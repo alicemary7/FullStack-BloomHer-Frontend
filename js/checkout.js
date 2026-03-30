@@ -62,10 +62,7 @@ async function renderCartSummary() {
   if (!userId) return;
 
   try {
-    const res = await fetch(`${window.API_BASE_URL}/cart/`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const items = await res.json();
+    const items = JSON.parse(localStorage.getItem("checkoutCartItems")) || [];
 
     if (items.length === 0) {
       window.showToast(
@@ -257,10 +254,7 @@ async function createOrder() {
 
 async function createCartOrder() {
   try {
-    const res = await fetch(`${window.API_BASE_URL}/cart/`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const items = await res.json();
+    const items = JSON.parse(localStorage.getItem("checkoutCartItems")) || [];
 
     if (items.length === 0) {
       window.showToast("Your cart is empty!", "info");
@@ -288,11 +282,6 @@ async function createCartOrder() {
 
     for (const order of orders) {
       await processPayment(order.id, true);
-      // Remove item from cart after successful order creation
-      await fetch(`${window.API_BASE_URL}/cart/item/${order.product_id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
-      });
     }
 
     const orderIds = orders.map((o) => o.id).join(",");
@@ -300,6 +289,7 @@ async function createCartOrder() {
     localStorage.removeItem("selectedProduct");
     localStorage.removeItem("checkoutMode");
     localStorage.removeItem("cartTotal");
+    localStorage.removeItem("checkoutCartItems");
     window.location.href = `./tracking.html?order_id=${orderIds}`;
   } catch (err) {
     window.showToast("Error processing cart order: " + err.message, "error");
@@ -329,6 +319,7 @@ async function processPayment(orderId, silent = false) {
       localStorage.removeItem("selectedProduct");
       localStorage.removeItem("checkoutMode");
       localStorage.removeItem("cartTotal");
+      localStorage.removeItem("checkoutCartItems");
       window.location.href = `./tracking.html?order_id=${orderId}`;
     }
   } catch (err) {
