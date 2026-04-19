@@ -41,54 +41,45 @@ function renderOrders(orders) {
 
   orders.sort((a, b) => b.id - a.id);
 
-  // Group orders placed within 5 seconds of each other
-  const groupedOrders = [];
   orders.forEach((order) => {
     const dateRaw = order.order_date;
     const dateFormatted = (dateRaw.includes("T") ? dateRaw : dateRaw.replace(" ", "T")) + (dateRaw.endsWith("Z") ? "" : "Z");
     const orderDateObj = new Date(dateFormatted);
-    const status = (order.status || "processing").toLowerCase();
-    
-    let foundGroup = false;
-    for (const group of groupedOrders) {
-        if (Math.abs(group.dateObj.getTime() - orderDateObj.getTime()) < 5000 && group.status === status) {
-            group.items.push(order);
-            foundGroup = true;
-            break;
-        }
-    }
-    if (!foundGroup) {
-        groupedOrders.push({
-            dateObj: orderDateObj,
-            status: status,
-            items: [order]
-        });
-    }
-  });
-
-  groupedOrders.forEach((group) => {
-    const { dateObj, status, items } = group;
-    const orderDateStr = dateObj.toLocaleString("en-IN", {
+    const orderDateStr = orderDateObj.toLocaleString("en-IN", {
       dateStyle: "medium",
       timeStyle: "short"
     });
 
-    const estDeliveryDate = new Date(dateObj);
+    const estDeliveryDate = new Date(orderDateObj);
     estDeliveryDate.setDate(estDeliveryDate.getDate() + 5);
     const deliveryDateStr = estDeliveryDate.toLocaleString("en-IN", { dateStyle: "medium" });
 
-    let groupTotal = 0;
-    const orderIds = [];
-    let itemsHtml = "";
+    const price = order.product?.price || 0;
+    const total = order.total_amount || (price * order.quantity);
+    const status = (order.status || "processing").toLowerCase();
 
-    items.forEach(order => {
-      const price = order.product?.price || 0;
-      const total = order.total_amount || (price * order.quantity);
-      groupTotal += total;
-      orderIds.push(order.id);
-      
-      itemsHtml += `
-      <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 15px;">
+    const orderCard = document.createElement("div");
+    orderCard.className = "section";
+    orderCard.style.marginBottom = "30px";
+    orderCard.style.border = "1px solid #ddd";
+
+    let stepInfo = getStepInfo(status);
+
+    orderCard.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 12px;">
+        <div>
+          <div style="font-weight: bold; font-size: 1.15rem; color: var(--primary);">Order #${order.id}</div>
+          <div style="font-size: 0.85rem; color: #666; margin-top: 4px;">Placed on ${orderDateStr}</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-weight: bold; color: ${status === "cancelled" ? "#c23b5a" : "var(--secondary)"}; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px;">
+            ${status}
+          </div>
+          <div style="font-size: 1.25rem; font-weight: 800; margin-top: 6px; color: var(--dark);">₹${total}</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 25px;">
         <img src="${order.product?.image_url}" style="width: 90px; height: 90px; object-fit: cover; border-radius: 10px; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
         <div style="flex: 1;">
           <div style="font-weight: 600; font-size: 1.05rem; color: var(--dark);">${order.product?.name || "Product info unavailable"}</div>
@@ -98,36 +89,6 @@ function renderOrders(orders) {
             <span>${order.shipping_address || "Address on profile"}</span>
           </div>
         </div>
-      </div>
-      `;
-    });
-
-    const orderCard = document.createElement("div");
-    orderCard.className = "section";
-    orderCard.style.marginBottom = "30px";
-    orderCard.style.border = "1px solid #ddd";
-
-    let stepInfo = getStepInfo(status);
-    
-    // Sort order IDs so they appear nicely (e.g. #30, #29)
-    orderIds.sort((a,b) => b - a);
-
-    orderCard.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 12px;">
-        <div>
-          <div style="font-weight: bold; font-size: 1.15rem; color: var(--primary);">Order #${orderIds.join(', #')}</div>
-          <div style="font-size: 0.85rem; color: #666; margin-top: 4px;">Placed on ${orderDateStr}</div>
-        </div>
-        <div style="text-align: right;">
-          <div style="font-weight: bold; color: ${status === "cancelled" ? "#c23b5a" : "var(--secondary)"}; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px;">
-            ${status}
-          </div>
-          <div style="font-size: 1.25rem; font-weight: 800; margin-top: 6px; color: var(--dark);">₹${groupTotal}</div>
-        </div>
-      </div>
-
-      <div style="margin-bottom: 25px;">
-        ${itemsHtml}
       </div>
 
       ${status !== "cancelled" ? `
@@ -154,13 +115,11 @@ function renderOrders(orders) {
           </div>
         </div>
         ${status === 'delivered' ? `
-        <div style="text-align: center; margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-          ${items.map(order => `
-            <a href="./review.html?productId=${order.product_id}&orderId=${order.id}" 
-               style="display: inline-block; padding: 10px 20px; background: var(--primary); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; font-size: 0.85rem; box-shadow: 0 4px 10px rgba(194, 59, 90, 0.2); transition: all 0.2s;">
-              Review ${order.product?.name || 'Product'}
-            </a>
-          `).join('')}
+        <div style="text-align: center; margin-bottom: 20px;">
+          <a href="./review.html?productId=${order.product_id}&orderId=${order.id}" 
+             style="display: inline-block; padding: 10px 25px; background: var(--primary); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(194, 59, 90, 0.2); transition: all 0.2s;">
+            Rate & Review Product
+          </a>
         </div>
         ` : ""}
         <div style="margin-top: 15px; padding: 12px; background: #f8fbff; border-radius: 8px; border-left: 3px solid #3b82f6; font-size: 0.85rem; color: #1e40af;">
