@@ -253,16 +253,34 @@ async function createOrder() {
 }
 
 async function createCartOrder() {
+  let items;
   try {
-    const items = JSON.parse(localStorage.getItem("checkoutCartItems")) || [];
+    items = JSON.parse(localStorage.getItem("checkoutCartItems")) || [];
+  } catch {
+    window.showToast("Cart data is corrupted.", "error");
+    return;
+  }
 
-    if (items.length === 0) {
-      window.showToast("Your cart is empty!", "info");
-      return;
-    }
+  if (items.length === 0) {
+    window.showToast("Your cart is empty!", "info");
+    return;
+  }
 
-    const orderPromises = items.map((item) => {
-      return fetch(`${ORDER_API_URL}/`, {
+  const email = document.getElementById("email")?.value;
+  const phone = document.getElementById("phone")?.value;
+  const address = document.getElementById("address")?.value;
+  const city = document.getElementById("city")?.value;
+  const state = document.getElementById("state")?.value;
+  const zip = document.getElementById("zip")?.value;
+
+  if (!email || !phone || !address || !city || !state || !zip) {
+    window.showToast("Please fill in all required fields.", "error");
+    return;
+  }
+
+  try {
+    const orderPromises = items.map((item) =>
+      fetch(`${ORDER_API_URL}/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -272,24 +290,28 @@ async function createCartOrder() {
           product_id: item.product_id,
           quantity: item.quantity,
           size: item.size || "Regular",
-          email: document.getElementById("email").value,
-          phone_number: document.getElementById("phone").value,
-          shipping_address: `${document.getElementById("address").value}, ${document.getElementById("city").value}, ${document.getElementById("state").value} ${document.getElementById("zip").value}`,
+          email,
+          phone_number: phone,
+          shipping_address: `${address}, ${city}, ${state} ${zip}`,
         }),
-      }).then((r) => r.json());
-    });
+      }).then((r) => {
+        if (!r.ok) throw new Error(`Order creation failed with status ${r.status}`);
+        return r.json();
+      })
+    );
+
     const orders = await Promise.all(orderPromises);
 
-    for (const order of orders) {
-      await processPayment(order.id, true);
-    }
+    // Process payments in parallel
+    await Promise.all(orders.map((order) => processPayment(order.id, true)));
 
     const orderIds = orders.map((o) => o.id).join(",");
-    window.showToast("Order placed successfully! ", "success");
-    localStorage.removeItem("selectedProduct");
-    localStorage.removeItem("checkoutMode");
-    localStorage.removeItem("cartTotal");
-    localStorage.removeItem("checkoutCartItems");
+    window.showToast("Order placed successfully!", "success");
+
+    ["selectedProduct", "checkoutMode", "cartTotal", "checkoutCartItems"].forEach(
+      (key) => localStorage.removeItem(key)
+    );
+
     window.location.href = `./tracking.html?order_id=${orderIds}`;
   } catch (err) {
     window.showToast("Error processing cart order: " + err.message, "error");
